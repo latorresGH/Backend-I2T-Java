@@ -2,7 +2,7 @@ package com.lyf.springboot_i2t.controllers;
 
 import com.lyf.springboot_i2t.entidades.Usuario;
 import com.lyf.springboot_i2t.services.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,17 +12,24 @@ import java.util.List;
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
-    // Crear un nuevo usuario
+    
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
+
     @PostMapping
-    public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<Usuario> crearUsuario(@RequestBody CrearUsuarioRequest request) {
         try {
-            Usuario nuevoUsuario = usuarioService.guardarUsuario(usuario);
+            // Guardar el usuario con los tipos de usuario asociados
+            Usuario nuevoUsuario = usuarioService.crearUsuario(request.getUsuario(), request.getTiposUsuarioIds());
             return ResponseEntity.ok(nuevoUsuario);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null); // Puedes personalizar este mensaje
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(null);
         }
     }
     
@@ -72,5 +79,26 @@ public class UsuarioController {
     public ResponseEntity<List<Usuario>> obtenerUsuariosPorTipoUsuario(@PathVariable Long tipoUsuarioId) {
         List<Usuario> usuarios = usuarioService.obtenerUsuariosPorTipoUsuario(tipoUsuarioId);
         return ResponseEntity.ok(usuarios);
+    }
+}
+
+class CrearUsuarioRequest {
+    private Usuario usuario;
+    private List<Long> tiposUsuarioIds;
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public List<Long> getTiposUsuarioIds() {
+        return tiposUsuarioIds;
+    }
+
+    public void setTiposUsuarioIds(List<Long> tiposUsuarioIds) {
+        this.tiposUsuarioIds = tiposUsuarioIds;
     }
 }

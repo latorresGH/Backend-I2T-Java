@@ -8,19 +8,19 @@ import jakarta.persistence.*;
 public class UsuarioTipoUsuario {
 
     @Id
-    @Column(name = "ID_TIPO_USUARIO") 
-    private Long idTipoUsuario; // Cambiado a Long para coincidir con BIGINT
+    @Column(name = "ID_TIPO_USUARIO")
+    private Long idTipoUsuario;
 
     @Id
-    @Column(name = "ID_USUARIO") 
-    private Long idUsuario; // Sigue siendo Long para BIGINT
+    @Column(name = "ID_USUARIO")
+    private Long idUsuario;
 
     @ManyToOne
-    @JoinColumn(name = "ID_USUARIO", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", insertable = false, updatable = false)
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "ID_TIPO_USUARIO", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "ID_TIPO_USUARIO", referencedColumnName = "ID", insertable = false, updatable = false)
     private TipoUsuario tipoUsuario;
 
     // Getters y Setters

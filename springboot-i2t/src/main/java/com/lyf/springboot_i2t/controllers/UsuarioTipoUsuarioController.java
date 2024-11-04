@@ -24,11 +24,14 @@ public class UsuarioTipoUsuarioController {
     }
 
     @GetMapping("/{idUsuario}/{idTipoUsuario}")
-    public ResponseEntity<UsuarioTipoUsuario> findById(@PathVariable Long idUsuario, @PathVariable Long idTipoUsuario) { // Cambiado a Long
-        UsuarioTipoUsuarioId id = new UsuarioTipoUsuarioId(idUsuario, idTipoUsuario);
+    public ResponseEntity<UsuarioTipoUsuario> findById(@PathVariable Long idUsuario, @PathVariable Long idTipoUsuario) {
+        UsuarioTipoUsuarioId id = new UsuarioTipoUsuarioId();
+        id.setIdUsuario(idUsuario);
+        id.setIdTipoUsuario(idTipoUsuario);
         Optional<UsuarioTipoUsuario> usuarioTipoUsuario = service.findById(id);
+        
         return usuarioTipoUsuario.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
     @PostMapping
@@ -36,11 +39,20 @@ public class UsuarioTipoUsuarioController {
         UsuarioTipoUsuario savedUsuarioTipoUsuario = service.save(usuarioTipoUsuario);
         return new ResponseEntity<>(savedUsuarioTipoUsuario, HttpStatus.CREATED);
     }
-
+    
     @DeleteMapping("/{idUsuario}/{idTipoUsuario}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long idUsuario, @PathVariable Long idTipoUsuario) { // Cambiado a Long
-        UsuarioTipoUsuarioId id = new UsuarioTipoUsuarioId(idUsuario, idTipoUsuario);
-        service.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteById(@PathVariable Long idUsuario, @PathVariable Long idTipoUsuario) {
+        UsuarioTipoUsuarioId id = new UsuarioTipoUsuarioId();
+        id.setIdUsuario(idUsuario);
+        id.setIdTipoUsuario(idTipoUsuario);
+        
+        Optional<UsuarioTipoUsuario> usuarioTipoUsuario = service.findById(id);
+        if (usuarioTipoUsuario.isPresent()) {
+            service.deleteById(id);
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404 Not Found
+        }
     }
+    
 }

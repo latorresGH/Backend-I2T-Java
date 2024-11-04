@@ -1,8 +1,11 @@
 package com.lyf.springboot_i2t.entidades;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -10,7 +13,7 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // Sigue siendo Long para BIGINT
+    private Long id; // BIGINT
 
     @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
@@ -31,9 +34,11 @@ public class Usuario {
     @Column(name = "fecha_nacimiento", nullable = false)
     private Date fechaNacimiento;
 
-    @Column(name = "fecha_creacion", nullable = false)
+    @CreationTimestamp
+    @Column(name = "fecha_creacion", updatable = false)
     private Date fechaCreacion;
 
+    @UpdateTimestamp
     @Column(name = "fecha_modificacion")
     private Date fechaModificacion;
 
@@ -42,12 +47,12 @@ public class Usuario {
         name = "usuario_tipo_usuario",
         joinColumns = @JoinColumn(name = "ID_USUARIO"),
         inverseJoinColumns = @JoinColumn(name = "ID_TIPO_USUARIO")
-    )
-    private Set<TipoUsuario> tiposUsuario;
+    )    
+    private List<TipoUsuario> tiposUsuario;
 
     // Constructor por defecto
     public Usuario() {
-        this.fechaCreacion = new Date(); 
+        // Constructor vacío necesario para JPA
     }
 
     // Constructor con parámetros
@@ -58,7 +63,6 @@ public class Usuario {
         this.email = email;
         this.password = password;
         this.fechaNacimiento = fechaNacimiento;
-        this.fechaCreacion = new Date(); 
     }
 
     // Getters y Setters
@@ -122,23 +126,15 @@ public class Usuario {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(Date fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-
     public Date getFechaModificacion() {
         return fechaModificacion;
     }
 
-    public void setFechaModificacion(Date fechaModificacion) {
-        this.fechaModificacion = fechaModificacion;
-    }
-
-    public Set<TipoUsuario> getTiposUsuario() {
+    public List<TipoUsuario> getTiposUsuario() {
         return tiposUsuario;
     }
-
-    public void setTiposUsuario(Set<TipoUsuario> tiposUsuario) {
+    
+    public void setTiposUsuario(List<TipoUsuario> tiposUsuario) {
         this.tiposUsuario = tiposUsuario;
     }
 
@@ -152,6 +148,9 @@ public class Usuario {
                 ", email='" + email + '\'' +
                 ", fechaNacimiento=" + fechaNacimiento +
                 ", fechaCreacion=" + fechaCreacion +
+                ", fechaModificacion=" + fechaModificacion +
+                ", tiposUsuario=" + (tiposUsuario != null ? tiposUsuario.size() : 0) +
                 '}';
     }
+    
 }
